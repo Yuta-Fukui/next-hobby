@@ -1,24 +1,64 @@
 "use client";
 
-import React from "react";
 import { useForm } from "react-hook-form";
-import { LoginFormInputs } from "@/models/user";
+import { loginFormSchema, LoginFormInputs } from "@/models/user";
+import { useMutation } from "@tanstack/react-query";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-// 関数コンポーネントを定義
+import { useRouter } from "next/navigation";
+
+async function fetcher(user: LoginFormInputs) {
+  const response = await fetch(
+    `/api/login?email=${encodeURIComponent(
+      user.email
+    )}&password=${encodeURIComponent(user.password)}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  } else {
+    return true;
+  }
+}
+
+function useLoginUser() {
+  const router = useRouter(); // useRouterをここで呼び出す
+  return useMutation({
+    mutationFn: async (user: LoginFormInputs) => {
+      const success = await fetcher(user);
+      if (success) {
+        router.push("/dashboard");
+      }
+    },
+  });
+}
+
 function LoginForm() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormInputs>();
-
-  const onSubmit = handleSubmit((data) => {
-    console.log(data);
-    // ここでログイン処理を実行します。
+  } = useForm<LoginFormInputs>({
+    resolver: zodResolver(loginFormSchema),
   });
 
+  const { mutate } = useLoginUser();
+
+  const onSubmit = async (user: LoginFormInputs) => {
+    // ここでサーバーにデータを送信する処理を実装
+    await mutate(user);
+  };
+
   return (
-    <form onSubmit={onSubmit} className="flex flex-col items-center p-5">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col items-center p-5"
+    >
       <div className="mb-4 w-full max-w-xs">
         <label
           htmlFor="email"

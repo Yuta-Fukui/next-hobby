@@ -71,7 +71,7 @@ export const updateRecords = async <T>(
   updatedFields: Partial<T>
 ): Promise<T[] | null> => {
   const supabase = createClient();
-  let query = supabase.from(table).update(updatedFields).eq("userId", 20);
+  let query = supabase.from(table).update(updatedFields);
   for (const [key, value] of Object.entries(conditions)) {
     query = query.eq(key, value as string | number);
   }
@@ -95,8 +95,10 @@ export const deleteRecords = async <T>(
     query = query.eq(key, value as string | number);
   }
   const { data, error } = await query;
+  console.log(data);
   if (error) {
     console.error(`Error deleting records from ${table}:`, error);
+     th
     return null;
   }
   return data;

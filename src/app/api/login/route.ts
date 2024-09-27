@@ -2,6 +2,7 @@ import { createRecord, getRecordById } from "@/app/api/crudService";
 import bcrypt from "bcrypt";
 
 import { NameInputs, LoginFormInputs, User } from "@/models/user";
+import { Session } from "@/models/session";
 
 import { NextRequest, NextResponse } from "next/server";
 
@@ -36,7 +37,10 @@ export async function GET(request: NextRequest) {
       (error as Error & { statusCode?: number }).statusCode = 401;
       throw error;
     } else {
-      setSession(user);
+      // セッションを作成
+      const session = await setSession(user);
+      // Cookieにセッション情報を保存
+      setCookie(session);
       return NextResponse.json(user);
     }
   } catch (e: unknown) {
@@ -63,7 +67,9 @@ export async function POST(request: NextRequest) {
     }
     const createdUser = result[0] as User;
     // セッションにユーザー情報を保存
-    setSession(createdUser);
+    const session = await setSession(createdUser);
+    // Cookieにセッション情報を保存
+    setCookie(session);
     return NextResponse.json(createdUser);
   } catch (error) {
     if (error instanceof Error) {
@@ -85,18 +91,20 @@ async function setSession(user: User) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(user),
+      body: JSON.stringify(user.id),
     }
   );
-  const response = await result.json();
-  // セッションデータのうちtokenをセッションストレージに保存
-  const { token, expiresAt } = await response[0];
-  if (!token) {
+  const response: Session[] = await result.json();
+  if (!response[0].token) {
     throw new Error("セッションの作成に失敗しました");
   }
-  const cookieStore = cookies();
-  // クッキーにtokenを保存
-  cookieStore.set("token", token, {
-    expires: new Date(expiresAt),
-  });
+  return response[0];
+}
+
+/**
+ * Cookieにセッション情報を保存
+ * @param {Session} session
+ */
+function setCookie(session: Session) {
+  cookies().set("user", JSON.stringify({ token: session.token, userId: session.userId, expiresAt: session.expiresAt }));
 }

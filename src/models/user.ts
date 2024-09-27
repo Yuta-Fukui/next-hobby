@@ -3,8 +3,8 @@ import { z } from "zod";
 // ユーザー全体のスキーマ
 export const userSchema = z.object({
   id: z.number(),
-  username: z.string().min(1, "Username is required"),
-  email: z.string().email("Invalid email address"),
+  username: z.string().min(1, "ユーザー名は入力必須です"),
+  email: z.string().email("メールアドレスは入力必須です"),
   password: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -12,13 +12,15 @@ export const userSchema = z.object({
 
 // ユーザー登録フォーム用スキーマ
 export const nameSchema = z.object({
-  username: z.string().min(1, "Username is required"),
+  username: z.string().min(1, "ユーザー名は入力必須です"),
 });
 
 // ログインフォーム用スキーマ
 export const loginFormSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, { message: "Password must be at least 6 characters long" })
+  email: z.string().email("メールアドレスは入力必須です"),
+  password: z
+    .string()
+    .min(6, { message: "パスワードは6文字以上で入力してください" }),
 });
 
 // TypeScriptの型をZodのスキーマから生成

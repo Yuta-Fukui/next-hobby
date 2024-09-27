@@ -10,6 +10,17 @@ import {
 } from "@/models/user";
 import { useMutation } from "@tanstack/react-query";
 
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { Input as TextInput } from "@/components/ui/input";
+
 import { useRouter } from "next/navigation";
 
 type RegistrationFormInputs = NameInputs & LoginFormInputs;
@@ -42,11 +53,7 @@ function useCreateUser() {
 }
 
 function RegistrationForm() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<RegistrationFormInputs>({
+  const form = useForm<RegistrationFormInputs>({
     resolver: zodResolver(nameSchema.merge(loginFormSchema)),
   });
 
@@ -58,68 +65,76 @@ function RegistrationForm() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col items-center p-5"
-    >
-      <div className="mb-4 w-full max-w-xs">
-        <label
-          htmlFor="username"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Username:
-        </label>
-        <input
-          id="username"
-          type="text"
-          {...register("username")}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        />
-        {errors.username && (
-          <p className="mt-2 text-sm text-red-600">{errors.username.message}</p>
-        )}
-      </div>
-      <div className="mb-4 w-full max-w-xs">
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Email:
-        </label>
-        <input
-          id="email"
-          type="email"
-          {...register("email")}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        />
-        {errors.email && (
-          <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>
-        )}
-      </div>
-      <div className="mb-6 w-full max-w-xs">
-        <label
-          htmlFor="password"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Password:
-        </label>
-        <input
-          id="password"
-          type="password"
-          {...register("password")}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        />
-        {errors.password && (
-          <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
-        )}
-      </div>
-      <button
-        type="submit"
-        className="w-full max-w-xs bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col items-center p-5"
       >
-        {isPending ? "登録中..." : "登録"}
-      </button>
-    </form>
+        <FormField
+          control={form.control}
+          name="username"
+          render={() => (
+            <FormItem className="mb-4 w-full max-w-xs">
+              <FormLabel>ユーザー名</FormLabel>
+              <FormControl>
+                <TextInput
+                  id="username"
+                  type="text"
+                  placeholder="ユーザー名"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-600 focus:border-blue-600 sm:text-sm"
+                  {...form.register("username")}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          render={() => (
+            <FormItem className="mb-4 w-full max-w-xs">
+              <FormLabel>メールアドレス</FormLabel>
+              <FormControl>
+                <TextInput
+                  id="email"
+                  type="email"
+                  placeholder="メールアドレス"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-600 focus:border-blue-600 sm:text-sm"
+                  {...form.register("email")}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={() => (
+            <FormItem className="mb-6 w-full max-w-xs">
+              <FormLabel>パスワード</FormLabel>
+              <FormControl>
+                <TextInput
+                  id="password"
+                  type="password"
+                  placeholder="パスワード"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-600 focus:border-blue-600 sm:text-sm"
+                  {...form.register("password")}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button
+          type="submit"
+          className="w-full max-w-xs bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          {isPending ? "登録中..." : "登録"}
+        </Button>
+      </form>
+    </Form>
   );
 }
 

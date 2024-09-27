@@ -7,6 +7,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useRouter } from "next/navigation";
 
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
+import { Input as TextInput } from "@/components/ui/input";
+
 async function fetcher(user: LoginFormInputs) {
   const response = await fetch(
     `/api/login?email=${encodeURIComponent(
@@ -39,15 +51,11 @@ function useLoginUser() {
 }
 
 function LoginForm() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormInputs>({
+  const form = useForm<LoginFormInputs>({
     resolver: zodResolver(loginFormSchema),
   });
 
-  const { mutate } = useLoginUser();
+  const { mutate, isPending } = useLoginUser();
 
   const onSubmit = async (user: LoginFormInputs) => {
     // ここでサーバーにデータを送信する処理を実装
@@ -55,51 +63,61 @@ function LoginForm() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col items-center p-5"
-    >
-      <div className="mb-4 w-full max-w-xs">
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Email:
-        </label>
-        <input
-          id="email"
-          type="email"
-          {...register("email", { required: "Email is required" })}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        />
-        {errors.email && (
-          <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>
-        )}
-      </div>
-      <div className="mb-6 w-full max-w-xs">
-        <label
-          htmlFor="password"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Password:
-        </label>
-        <input
-          id="password"
-          type="password"
-          {...register("password", { required: "Password is required" })}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        />
-        {errors.password && (
-          <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
-        )}
-      </div>
-      <button
-        type="submit"
-        className="w-full max-w-xs bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col items-center p-5"
       >
-        Login
-      </button>
-    </form>
+        <FormField
+          control={form.control}
+          name="email"
+          render={() => (
+            <FormItem className="mb-4 w-full max-w-xs">
+              <FormLabel>メールアドレス</FormLabel>
+              <FormControl>
+                <TextInput
+                  id="email"
+                  type="email"
+                  placeholder="メールアドレス"
+                  {...form.register("email", {
+                    required: "メールアドレスは入力必須です",
+                  })}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={() => (
+            <FormItem className="mb-6 w-full max-w-xs">
+              <FormLabel>パスワード</FormLabel>
+              <FormControl>
+                <TextInput
+                  placeholder="パスワード"
+                  id="password"
+                  type="password"
+                  {...form.register("password", {
+                    required: "パスワードは入力必須です",
+                  })}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button
+          type="submit"
+          className="w-full max-w-xs bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          {isPending ? "..." : "ログイン"}
+        </Button>
+      </form>
+    </Form>
   );
 }
 

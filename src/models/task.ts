@@ -4,7 +4,7 @@ import { dateSchema } from "./date";
 import { parseISO, isAfter } from "date-fns";
 
 export const taskSchema = z.object({
-  title: z.string().min(1, "タイトルは入力必須です"),
+  title: z.string().min(3, "タイトルは入力必須です").max(20, "タイトルは20文字以下で入力してください"),
   description: z.string().optional(),
   status: z.enum(["pending", "in_progress", "completed"], {
     required_error: "ステータスは入力必須です",

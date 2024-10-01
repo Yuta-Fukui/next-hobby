@@ -3,7 +3,7 @@ import { z } from "zod";
 // ユーザー全体のスキーマ
 export const userSchema = z.object({
   id: z.number(),
-  username: z.string().min(5, "ユーザー名は入力必須です"),
+  username: z.string().min(1, "ユーザー名は入力必須です"),
   email: z.string().email("メールアドレスは入力必須です"),
   password: z
     .string()
@@ -18,7 +18,7 @@ export const userSchema = z.object({
 
 // ユーザー登録フォーム用スキーマ
 export const nameSchema = z.object({
-  username: z.string().min(5, "ユーザー名は入力必須です"),
+  username: z.string().min(1, "ユーザー名は入力必須です"),
 });
 
 // ログインフォーム用スキーマ

@@ -76,7 +76,6 @@ export const updateRecords = async <T>(
     query = query.eq(key, value as string | number);
   }
   const { data, error } = await query.select();
-  console.log(data);
   if (error) {
     console.error(`Error updating records in ${table}:`, error);
     return null;
@@ -95,10 +94,8 @@ export const deleteRecords = async <T>(
     query = query.eq(key, value as string | number);
   }
   const { data, error } = await query;
-  console.log(data);
   if (error) {
     console.error(`Error deleting records from ${table}:`, error);
-     th
     return null;
   }
   return data;

@@ -79,6 +79,7 @@ function LoginForm() {
                   id="email"
                   type="email"
                   placeholder="メールアドレス"
+                  autoComplete="email"
                   {...form.register("email", {
                     required: "メールアドレスは入力必須です",
                   })}

@@ -58,12 +58,12 @@ export async function DELETE() {
     if (!userCookie) {
       return NextResponse.redirect(new URL("/login"));
     }
-    console.log(userCookie.value);
     // セッションを削除する
     await deleteRecords<Session>(TABLE_NAME, {
       userId: JSON.parse(userCookie.value).userId,
     });
     cookies().delete("user");
+    return NextResponse.json({ message: "セッションを削除しました" });
   } catch (error) {
     if (error instanceof Error) {
       return NextResponse.json({ error: error.message }, { status: 500 });

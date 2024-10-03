@@ -91,7 +91,6 @@ export async function DELETE(request: NextRequest) {
       throw new Error("ログインしてください");
     }
     const id = await request.json();
-    console.log(id);
     await deleteRecords<TaskTable>(TABLE_NAME, id);
     return NextResponse.json({ message: "削除しました" });
   } catch (error) {
